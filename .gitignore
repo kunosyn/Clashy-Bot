@@ -1,3 +1,4 @@
 dist/
 node_modules/
 source/globals.ts
+source/registercommands.ts
