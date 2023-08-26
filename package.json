@@ -1,0 +1,23 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc.cmd && node dist",
+    "test": "tsc.cmd && node dist/registercommands.js"
+  },
+  "keywords": [],
+  "authors": [
+    "ryansyn",
+    "kunosyn"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "clashofclans.js": "^3.1.2",
+    "discord.js": "^14.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.4"
+  }
+}
