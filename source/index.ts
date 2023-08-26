@@ -9,7 +9,7 @@ import fs from 'node:fs'
 
 const clashClient = new Client()
 const discordClient = new ExtendedClient({
-    intents: [ ]
+    intents: [ discord.GatewayIntentBits.GuildMembers, discord.GatewayIntentBits.Guilds, discord.GatewayIntentBits.MessageContent ]
 })
 
 var verificationChannel: discord.Channel | undefined
@@ -33,12 +33,17 @@ discordClient.on('interactionCreate', async ( interaction: discord.Interaction )
     memberRole ??= await interaction.guild?.roles.fetch(MEMBER_ROLE)
 
     if (interaction.isChatInputCommand()) {
+        if (!interaction.inCachedGuild()) {
+            await interaction.reply('Guild is not cached.')
+            return
+        }
+
         if (discordClient.commands.has(interaction.commandName)) {
             try {
                 let msg = await interaction.deferReply()
        
                 let execute: CommandFile['execute'] = discordClient.commands.get(interaction.commandName)
-                
+
                 await execute(discordClient, clashClient, interaction, parseInt(msg.id))
             } catch (error: any | Error) {
                 await interaction.editReply('Error.') // Interactions when deferred must be given content before you can delete them.
@@ -50,6 +55,11 @@ discordClient.on('interactionCreate', async ( interaction: discord.Interaction )
             await interaction.reply({ content: 'Error: Command file has not been properly setup.', ephemeral: true })
         }
     } else if (interaction.isButton()) {
+        if (!interaction.inCachedGuild()) {
+            await interaction.reply('Guild is not cached.')
+            return
+        }
+
         let args = interaction.customId.split('_')
 
         if (args[0].endsWith('Verify'))  {

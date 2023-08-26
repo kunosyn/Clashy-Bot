@@ -16,7 +16,7 @@ export const builder = new discord.SlashCommandBuilder()
 export const execute = async ( client: ExtendedClient, clashClient: coc.Client, interaction: discord.ChatInputCommandInteraction, msgId: number ) => {
     let clanTag = (interaction.options.getString('tag') ?? CLAN_TAG)
     clanTag.charAt(0) == '#' ? clanTag : `#${clanTag}`
-
+    console.log(clanTag)
     let clanInfo = await clashClient.getClan(clanTag)
 
     let embed = new discord.EmbedBuilder({
