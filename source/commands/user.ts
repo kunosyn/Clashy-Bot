@@ -48,6 +48,8 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
     if (userInfo !== null) {
         userInfo = userInfo as coc.Player
 
+        let clanTag = (userInfo.clan != null && userInfo.clan != undefined) ? `(${userInfo.clan.tag})` : ''
+
         let embed = new discord.EmbedBuilder({
             title: `**${userInfo.name} (${userInfo.tag})**`,
 
@@ -63,7 +65,7 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
             },
 
             fields: [
-                { name: 'Clan', value: `${(userInfo.clan ?? { name: 'none' }).name}`, inline: true },
+                { name: 'Clan', value: `${(userInfo.clan ?? { name: 'none' }).name} ${clanTag}`, inline: true },
                 { name: 'League', value: `${userInfo.league.name}`, inline: true },
                 { name: 'Attack Wins', value: userInfo.attackWins.toString(), inline: true },
                 { name: 'Defense Wins', value: userInfo.defenseWins.toString(), inline: true },
@@ -72,7 +74,7 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
                 { name: 'Recieved', value: userInfo.received.toString(), inline: true },
                 { name: 'Role', value: ROLE_NAMES[userInfo.role ?? 'clanless'], inline: true },
                 { name: 'Trophies', value: userInfo.trophies.toString(), inline: true },
-                { name: 'War Prefere', value: userInfo.warStars.toString(), inline: true },
+                { name: 'War Preference', value: userInfo.warStars.toString(), inline: true },
                 { name: 'War Status', value: userInfo.warOptedIn ? 'In' : 'Out', inline: true },
                 { name: 'Town Hall', value: `Level ${userInfo.townHallLevel}`, inline: true },
                 { name: 'Builder Hall', value: `Level ${userInfo.builderHallLevel}`, inline: true },
