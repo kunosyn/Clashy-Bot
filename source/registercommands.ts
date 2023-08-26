@@ -5,7 +5,7 @@ const path = require('node:path');
 const commands: any = [];
 const clientId = '1141212898195165264'
 const guildId = '1140097828543279105'
-const token = 'MTE0MTIxMjg5ODE5NTE2NTI2NA.GirsrF.1zLnY3HAp80dWLaHwo1CdlEMurSoYiyZNuZTdE'
+const token = 'REDACTED'
 // Grab all the command files from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
 let commandFiles: any = fs.readdirSync(foldersPath)
