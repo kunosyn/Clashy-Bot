@@ -1,11 +1,14 @@
+// File sourced from discord js guide not written by kunosyn.
+import { CLIENT_ID, DISCORD_TOKEN, GUILD_ID } from "./globals";
+
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const commands: any = [];
-const clientId = '1141212898195165264'
-const guildId = '1140097828543279105'
-const token = 'MTE0MTIxMjg5ODE5NTE2NTI2NA.GirsrF.1zLnY3HAp80dWLaHwo1CdlEMurSoYiyZNuZTdE'
+const clientId = CLIENT_ID
+const guildId = GUILD_ID
+const token = DISCORD_TOKEN
 // Grab all the command files from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
 let commandFiles: any = fs.readdirSync(foldersPath)
