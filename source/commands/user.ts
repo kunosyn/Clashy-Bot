@@ -25,7 +25,7 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
     userGiven ??= interaction.guild?.members.cache.find(member => member.id == interaction.user.id) ?? await interaction.guild?.members.fetch(interaction.user.id)
     
     let clanInfo = await clashClient.getClan(CLAN_TAG), clanMembers: coc.ClanMember[] = clanInfo.members
-    let userInfo: coc.Player | null = null
+    let userInfo: coc.Player | null = null, embed: discord.EmbedBuilder | null = null
 
     if (typeof userGiven == 'string') {
         try {
@@ -38,7 +38,20 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
         let clanMember = clanMembers.find(m => m.name == (userGiven as discord.GuildMember).nickname ?? (userGiven as discord.GuildMember).user.username)
 
         if (!clanMember) {
-            await interaction.editReply({ content: 'User is not properly verified in the server!' })
+            embed = new discord.EmbedBuilder({
+                title: 'Not Verified ',
+                description: interaction.user.id == userGiven.user.id ? 'You are not verified! Please run \`/verify\` or specify your user tag to view your info!' : `\`${userGiven.user.username}\` is not verified! They must verify or you should specify their user tag to view their info!`,
+                color: 0xff636b,
+                footer: {
+                    text: 'clashy',
+                    icon_url: client.user!.avatarURL() as string
+                }
+            })
+
+            embed.setTimestamp()
+            embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+
+            await interaction.editReply({ embeds: [ embed ] })
             return
         }
 
@@ -50,7 +63,7 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
 
         let clanTag = (userInfo.clan != null && userInfo.clan != undefined) ? `(${userInfo.clan.tag})` : ''
 
-        let embed = new discord.EmbedBuilder({
+        embed = new discord.EmbedBuilder({
             title: `**${userInfo.name} (${userInfo.tag})**`,
 
             url: userInfo.shareLink,

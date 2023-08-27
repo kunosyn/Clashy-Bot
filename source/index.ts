@@ -4,7 +4,7 @@ import { Client } from 'clashofclans.js'
 
 import { CommandFile } from './types'
 import { handleInteraction } from './interactions'
-import { API_CREDENTIALS, DISCORD_TOKEN, VERIFICATION_CHANNEL, MEMBER_ROLE, memberRole, requestChannel, setRequestChannel, setMemberRole  } from './globals'
+import { API_CREDENTIALS, DISCORD_TOKEN, VERIFICATION_CHANNEL, MEMBER_ROLE, memberRole, requestChannel, setRequestChannel, setMemberRole, CLAN_TAG  } from './globals'
 
 import fs from 'node:fs'
 
@@ -30,6 +30,23 @@ discordClient.once('ready', async () => {
 
     // Fetches and sets the requestChannel global variable.
     await setRequestChannel(discordClient)
+
+    const updatePresence = async () => {
+        let clanMembers = await clashClient.getClanMembers(CLAN_TAG)
+    
+        discordClient.user!.setPresence({
+            activities: [
+                { type: discord.ActivityType.Watching, name: `Rogues, ${clanMembers.length} members!`},
+            ],
+            status: 'dnd'
+        })
+    }
+
+    updatePresence()
+
+    setInterval(async () => {
+        updatePresence()
+    }, 120000)
 })
 
 discordClient.on('interactionCreate', async ( interaction: discord.Interaction ) => {

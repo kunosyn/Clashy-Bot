@@ -18,17 +18,96 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
     if (!channel || !channel.isTextBased()) throw new Error('Channel is not able to be fetched.')
 
     let givenUsername = interaction.options.getString('username', true)
+    let member = interaction.guild!.members.cache.find(m => m.id == interaction.user.id) ?? await interaction.guild!.members.fetch(interaction.user.id)
+    let clanMembers = await clashClient.getClanMembers(CLAN_TAG)
 
-    let embed = new discord.EmbedBuilder({
+    let existingWithNickname = interaction.guild!.members.cache.find(m => m.nickname == givenUsername) ?? (await interaction.guild!.members.fetch()).filter(f => f.nickname == givenUsername).at(0)
+
+    let embed: discord.EmbedBuilder
+
+    if (existingWithNickname) {
+        embed = new discord.EmbedBuilder({
+            title: 'Verification Cancelled',
+            description: `User \`${existingWithNickname.user.username}\` is already verified to \`${givenUsername}\`!`,
+            color: 0xff636b,
+            fields: [
+                { name: 'Discord User', value: interaction.user.username, inline: true },
+                { name: 'Reqested Clash of Clans User', value: givenUsername, inline: true }
+            ],
+            footer: {
+                text: 'clashy',
+                icon_url: client.user!.avatarURL() as string
+            },
+        })
+
+        embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+        embed.setTimestamp()
+
+        await interaction.editReply({ embeds: [ embed ] })
+        return
+    }
+
+    if (clanMembers.find(m => m.name == givenUsername) == undefined) {
+        embed = new discord.EmbedBuilder({
+            title: 'Verification Cancelled',
+            description: `There is no user with username \`${givenUsername}\` in the clan!`,
+            color: 0xff636b,
+            fields: [
+                { name: 'Discord User', value: interaction.user.username, inline: true },
+                { name: 'Reqested Clash of Clans User', value: givenUsername, inline: true }
+            ],
+            footer: {
+                text: 'clashy',
+                icon_url: client.user!.avatarURL() as string
+            },
+        })
+
+        embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+        embed.setTimestamp()
+
+        await interaction.editReply({ embeds: [ embed ] })
+        return
+    }
+
+
+    if (givenUsername == member.nickname) {
+        embed = new discord.EmbedBuilder({
+            title: 'Verification Cancelled',
+            description: 'You are already verified to this name!',
+            color: 0xff636b,
+            fields: [
+                { name: 'Discord User', value: interaction.user.username, inline: true },
+                { name: 'Reqested Clash of Clans User', value: givenUsername, inline: true }
+            ],
+            footer: {
+                text: 'clashy',
+                icon_url: client.user!.avatarURL() as string
+            },
+        })
+
+        embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+        embed.setTimestamp()
+
+        await interaction.editReply({ embeds: [ embed ] })
+        return
+    }
+
+    embed = new discord.EmbedBuilder({
         title: `Verification Request`,
         color: 0xffffff,
+        description: 'Your verification request has been sent!',
         fields: [
             { name: 'Discord User', value: interaction.user.username, inline: true },
-            { name: 'Clash of Clans User', value: givenUsername, inline: true }
-        ]
+            { name: 'Requested Clash of Clans User', value: givenUsername, inline: true }
+        ],
+        footer: {
+            text: 'clashy',
+            icon_url: client.user!.avatarURL() as string
+        },
     })
-    
+
     embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+    embed.setTimestamp()
 
     let acceptButton = new discord.ButtonBuilder({
         label: 'Accept',
@@ -44,12 +123,28 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
         customId: `denyVerify_${interaction.user.id}_${givenUsername}_${interaction.id}`
     })
 
-    let row = new discord.ActionRowBuilder({
+    let row = new discord.ActionRowBuilder<discord.ButtonBuilder>({
         components: [ acceptButton, denyButton ]
     })
 
-    await interaction.editReply('Verification request has been sent!')
+    await interaction.editReply({ embeds: [ embed ]})
 
-    //@ts-ignore
+
+    embed = new discord.EmbedBuilder({
+        title: `Verification Request`,
+        color: 0xffffff,
+        fields: [
+            { name: 'Discord User', value: interaction.user.username, inline: true },
+            { name: 'Requested Clash of Clans User', value: givenUsername, inline: true }
+        ],
+        footer: {
+            text: 'clashy',
+            icon_url: client.user!.avatarURL() as string
+        },
+    })
+    
+    embed.setThumbnail(interaction.user.avatarURL() ?? client.user!.avatarURL())
+    embed.setTimestamp()
+    
     await channel.send({ embeds: [ embed ], components: [ row ] })
 }

@@ -38,8 +38,14 @@ export const execute = async ( client: ExtendedClient, clashClient: coc.Client, 
             { name: 'War Losses', value: (clanInfo.warLosses?.toString() ?? '0'), inline: true },
             { name: 'War Ties', value: (clanInfo.warTies?.toString() ?? '0'), inline: true },
             { name: 'Win Loss Ratio', value: `${(clanInfo.warWins / (clanInfo.warLosses ?? 0)).toPrecision(2).toString()}`, inline: true}
-        ]
+        ],
+        footer: {
+            text: 'clashy',
+            icon_url: client.user!.avatarURL() as string
+        },
     })
+
+    embed.setTimestamp()
 
     await interaction.editReply({ embeds: [ embed ]})
 }
